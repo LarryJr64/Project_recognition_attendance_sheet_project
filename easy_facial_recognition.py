@@ -14,6 +14,7 @@ import ntpath
 from datetime import datetime
 from PIL import ImageGrab
 import json
+import pandas as pd
 
 
 parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
@@ -138,14 +139,16 @@ if __name__ == '__main__':
             #save_path = f"C:\\Users\\louis\\Desktop\\Programmation_Wirtz\\Photo_Projets\\image{time}.jpg"
             #SS.save(save_path)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            with open(r'D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_facial.json', 'w') as fp:
-                json.dump(str(df_present),fp)
-            break
+          #  with open(r'D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_facial.json', 'w') as fp:
+           #     json.dump(str(df_present),fp)
+          break
     print('[INFO] Stopping System')
     
     video_capture.release()
     cv2.destroyAllWindows()
     print(df_present)
 
+df_present = {'names': list({'josua', '- Claude'}), 'presence': ['04-10-2022-17h18', '04-10-2022-17h18']}
+pd.DataFrame(df_present).to_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")
 
-
+pd.read_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")

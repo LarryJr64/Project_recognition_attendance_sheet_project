@@ -18,6 +18,7 @@ import pandas as pd
 from collections import defaultdict
 from datetime import datetime
 import json
+import pandas as pd
 
 console = Console()
 
@@ -200,6 +201,9 @@ with open(r'D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_facial.
     output_facial= json.load(fp)
 
 output_facial
+
+df_cours_1 = 
+
 def prep_df():
         global a,b,c,d,e,k,l,m,n,o
         if len(start_end)==0:
@@ -310,8 +314,12 @@ df
 output_facial
 
 
-for row in df['testi']:
-    if df['testi']=output_facial== true :
+for i in df['testi']:
+    if df['testi']=re(output_facial)== true and colonne_1 = signature1 == true:
+        append ("x")
+    elif ...
         
+
+pd.read_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")
         
 # https://www.projectpro.io/recipes/insert-new-column-based-on-condition-in-python
