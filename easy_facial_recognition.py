@@ -13,7 +13,6 @@ from pathlib import Path
 import ntpath
 from datetime import datetime
 from PIL import ImageGrab
-import json
 import pandas as pd
 
 
@@ -23,9 +22,9 @@ parser.add_argument('-i', '--input', type=str, required=True, help='directory of
 print('[INFO] Starting System...')
 print('[INFO] Importing pretrained model..')
 df_present={"names":set(),"presence":[]}
-pose_predictor_68_point = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-pose_predictor_5_point = dlib.shape_predictor("shape_predictor_5_face_landmarks.dat")
-face_encoder = dlib.face_recognition_model_v1("dlib_face_recognition_resnet_model_v1.dat")
+pose_predictor_68_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_68_face_landmarks.dat")
+pose_predictor_5_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_5_face_landmarks.dat")
+face_encoder = dlib.face_recognition_model_v1("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/dlib_face_recognition_resnet_model_v1.dat")
 face_detector = dlib.get_frontal_face_detector()
 print('[INFO] Importing pretrained model..')
 
@@ -83,8 +82,6 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):
                 df_present["presence"].append(datetime.now().strftime("%d-%m-%Y-%Hh%M"))
             else:
                 pass
-
-            #indices = [i for i, x in enumerate(result) if x == True]
         else:
             name = "Unknown"
         face_names.append(name)
@@ -130,25 +127,12 @@ if __name__ == '__main__':
         frame = cv2.GaussianBlur(frame, (7, 7), 0)
         easy_face_reco(frame, known_face_encodings, known_face_names)          
         cv2.imshow('Easy Facial Recognition App', frame)
-        #if keyboard.is_pressed('space'):
-            #time = datetime.now().strftime("%Y%m%d%H%M%S")
-            #myScreenshot=pyautogui.screenshot()
-            #myScreenshot.save(Path(r'C:/Users/louis/Desktop/Programmation_Wirtz/Photos_Projets/image_'+time+'.jpg'))
-            
-            #SS = ImageGrab.grab()
-            #save_path = f"C:\\Users\\louis\\Desktop\\Programmation_Wirtz\\Photo_Projets\\image{time}.jpg"
-            #SS.save(save_path)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-          #  with open(r'D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_facial.json', 'w') as fp:
-           #     json.dump(str(df_present),fp)
-          break
+            df_present["names"]=list(df_present["names"])
+            pd.DataFrame(df_present).to_csv("C:/Users/louis/Documents/GitHub/Gros_Cr-ne_Chauve/output.csv")
+            break
     print('[INFO] Stopping System')
     
     video_capture.release()
     cv2.destroyAllWindows()
     print(df_present)
-
-df_present = {'names': list({'josua', '- Claude'}), 'presence': ['04-10-2022-17h18', '04-10-2022-17h18']}
-pd.DataFrame(df_present).to_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")
-
-pd.read_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")
