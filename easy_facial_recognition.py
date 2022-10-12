@@ -1,18 +1,14 @@
 
 from datetime import datetime
 import cv2
-import sys
 import numpy as np
 import os
 import PIL.Image
 import dlib
 from imutils import face_utils
 import argparse
-import face_recognition
 from pathlib import Path
 import ntpath
-from datetime import datetime
-from PIL import ImageGrab
 import pandas as pd
 
 
