@@ -125,10 +125,11 @@ if __name__ == '__main__':
         cv2.imshow('Easy Facial Recognition App', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             df_present["names"]=list(df_present["names"])
-            pd.DataFrame(df_present).to_csv("C:/Users/louis/Documents/GitHub/Gros_Cr-ne_Chauve/output.csv")
+            pd.DataFrame(df_present).to_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output.csv")
             break
     print('[INFO] Stopping System')
     
     video_capture.release()
     cv2.destroyAllWindows()
     print(df_present)
+

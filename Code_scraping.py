@@ -17,7 +17,6 @@ import re
 import pandas as pd
 from collections import defaultdict
 from datetime import datetime
-import json
 import pandas as pd
 
 console = Console()
@@ -53,14 +52,15 @@ web()
 
 # Demande l'identifiant et le mot de passe UNISTRA
 def get_user_info():
+    sleep(2)
     global username
     global password
     username = input('Identifiant UNISTRA?')
     password = getpass.getpass('Mot de passe UNISTRA?')
 
-driver.find_element()
 # Renvoi des informations au navigateur et clique sur login
 def connect():
+    sleep(2)
     driver.find_element(By.ID, 'username').send_keys(username)
     driver.find_element(By.ID, 'password').send_keys(password)
     driver.find_element(By.ID, 'login-btn').click()
@@ -68,15 +68,16 @@ def connect():
 
 # Contrôle si encore sur la page de login ou pas
 def check_login():
+    sleep(2)
     try:
         driver.find_element(By.CLASS_NAME, 'login')
     except NoSuchElementException:
         return False
     return True
 
-#get_user_info()
-#connect()
-#check_login()
+get_user_info()
+connect()
+check_login()
 
 def connect_user():
     get_user_info()
@@ -88,7 +89,7 @@ def connect_user():
         connect_user()
     return console.print('Connexion Réussie.', style='green')
 
-connect_user()
+#connect_user()
 
 
 
@@ -189,21 +190,6 @@ get_occupation_duration()
 get_occupation_end()
 get_dict()
 
-start_end = [['08:00', '09:00'], ['09:00', '11:00'], ['11:00', '12:00']]
-infos = ['Travail personnel',
- ' A 330',
- ' UE 1. Architectures, modèles et langages de données',
- ' A 330',
- ' Travail personnel',
- ' A 330',
- '']
-with open(r'D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_facial.json', 'r') as fp:
-    output_facial= json.load(fp)
-
-output_facial
-
-df_cours_1 = 
-
 def prep_df():
         global a,b,c,d,e,k,l,m,n,o
         if len(start_end)==0:
@@ -273,53 +259,47 @@ def prep_df():
                 n=start_end[3]
                 o=start_end[4]  
         else: 
-                pass
-    
+                pass 
 prep_df()
 
+
+
+# Création du squelette du dataframe fiche absence
 data0 = {'Colonne_0' : [datetime.today().strftime('%d-%m-%Y'),'Intitulé_du_cours_prof','Horaires','signature_de_l_enseignant'],
         'Colonne_1' : ['',a,k,'Signature1'],
         'Colonne_2' : ['',b,l,'Signature2'],
         'Colonne_3' : ['',c,m,'Signature3'],
         'Colonne_4' : ['',d,n,'Signature4'],
         'Colonne_5' : ['',e,o,'Signature4']}
-
 df0 = pd.DataFrame(data0)
 
-data1 = {'Colonne_0' :['Elève_alternant','NEURETHER Alexander','LANEVE Louis'],
+data1 = {'Colonne_0' :['Elève_alternant','NEUNREUTHER_Alexander','LA_NEVE_Louis'],
         'Colonne_1' : ['','Signature1','Signature1'],
         'Colonne_2' : ['','Signature2','Signature2'],
         'Colonne_3' : ['','Signature3','Signature3'],
         'Colonne_4' : ['','Signature4','Signature4'],
         'Colonne_5' : ['','Signature5','Signature5']}
-
 df1 = pd.DataFrame(data1)
 
-data2 = {'Colonne_0' :['Elève_non_alternant','ROUSSAUX Claude-Marie'],
+data2 = {'Colonne_0' :['Elève_non_alternant','ROUSSAUX_Claude-Marie'],
         'Colonne_1' : ['','Signature1'],
         'Colonne_2' : ['','Signature2'],
         'Colonne_3' : ['','Signature3'],
         'Colonne_4' : ['','Signature4'],
         'Colonne_5' : ['','Signature5']}
-
 df2 = pd.DataFrame(data2)
 
+#Import des données visage
+output_facial=pd.read_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output.csv")
+
+#Df des absences
 frames = [df0, df1, df2]
 df = pd.concat(frames)
+df["names"]=df["Colonne_0"]
+df=df.drop(["Colonne_0"],axis=1)
 
-df.set_index("Colonne_0", inplace=True)
-df.index.names= ['testi']
-df
-
-output_facial
-
-
-for i in df['testi']:
-    if df['testi']=re(output_facial)== true and colonne_1 = signature1 == true:
-        append ("x")
-    elif ...
-        
-
-pd.read_csv(r"D:\Cours_2021-2022\Semestre_3\Architecture_de_donnees\output_csv.csv")
-        
-# https://www.projectpro.io/recipes/insert-new-column-based-on-condition-in-python
+#Merging des visages reconnus à ce cours présent
+sousdf1=pd.DataFrame(df["names"][4:])
+output_facial=output_facial.drop(["Unnamed: 0"],axis=1)
+sousdf1=sousdf1.merge(output_facial, on='names', how='left')
+sousdf1.to_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output_modif_"+str(datetime.today().strftime("%Hh%M"))+".csv")
