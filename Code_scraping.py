@@ -17,7 +17,9 @@ import re
 import pandas as pd
 from collections import defaultdict
 from datetime import datetime
-import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+import numpy as np
 
 console = Console()
 
@@ -193,29 +195,16 @@ get_dict()
 
 
 # Création du squelette du dataframe fiche absence
-data0 = {'Colonne_0' : [datetime.today().strftime('%d-%m-%Y'),'Intitulé_du_cours_prof','Horaires','signature_de_l_enseignant'],
-        'Colonne_1' : ['',a,k,'Signature1'],
-        'Colonne_2' : ['',b,l,'Signature2'],
-        'Colonne_3' : ['',c,m,'Signature3'],
-        'Colonne_4' : ['',d,n,'Signature4'],
-        'Colonne_5' : ['',e,o,'Signature4']}
+data0 = {'Colonne_0' : [datetime.today().strftime('%d-%m-%Y'),'Intitulé_du_cours_prof','Horaires','signature_de_l_enseignant']}
 df0 = pd.DataFrame(data0)
 
-data1 = {'Colonne_0' :['Elève_alternant','NEUNREUTHER_Alexander','LA_NEVE_Louis'],
-        'Colonne_1' : ['','Signature1','Signature1'],
-        'Colonne_2' : ['','Signature2','Signature2'],
-        'Colonne_3' : ['','Signature3','Signature3'],
-        'Colonne_4' : ['','Signature4','Signature4'],
-        'Colonne_5' : ['','Signature5','Signature5']}
+data1 = {'Colonne_0' :['Elève_alternant','NEUNREUTHER_Alexander','LA_NEVE_Louis']}
 df1 = pd.DataFrame(data1)
 
-data2 = {'Colonne_0' :['Elève_non_alternant','ROUSSAUX_Claude-Marie'],
-        'Colonne_1' : ['','Signature1'],
-        'Colonne_2' : ['','Signature2'],
-        'Colonne_3' : ['','Signature3'],
-        'Colonne_4' : ['','Signature4'],
-        'Colonne_5' : ['','Signature5']}
+data2 = {'Colonne_0' :['Elève_non_alternant','ROUSSAUX Claude-Marie']}
 df2 = pd.DataFrame(data2)
+
+
 
 #Import des données visage
 output_facial=pd.read_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output.csv")
@@ -226,8 +215,76 @@ df = pd.concat(frames)
 df["names"]=df["Colonne_0"]
 df=df.drop(["Colonne_0"],axis=1)
 
+
 #Merging des visages reconnus à ce cours présent
 sousdf1=pd.DataFrame(df["names"][4:])
 output_facial=output_facial.drop(["Unnamed: 0"],axis=1)
 sousdf1=sousdf1.merge(output_facial, on='names', how='left')
 sousdf1.to_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output_modif_"+str(datetime.today().strftime("%Hh%M"))+".csv")
+
+#Suite du merge/merge final
+compteur_lancer= int(input("Combien de fois avez vous lancé le programme: "))
+infos.remove('')
+nbr_cours=int((len(infos)/2))
+liste_horaire=start_end
+
+#Selection des différents csv presence
+i=1
+noms_fichier_pres=[]
+if compteur_lancer==nbr_cours:
+    while i <= compteur_lancer:
+        root = Tk()
+        root.update()
+        console.print('Sélectionnez le '+str(i)+'ème fichier de présence', style="#3399FF")
+        noms_fichier_pres.append(askopenfilename())
+        root.destroy()
+        i+=1
+else:
+    pass
+
+
+#Pre-processing de la data
+list_csv_doc=[]
+
+for a in noms_fichier_pres:
+    list_csv_doc.append(pd.read_csv(a))
+
+for i in range(0,nbr_cours):
+    list_csv_doc[i]=list_csv_doc[i].drop("Unnamed: 0",axis=1)
+
+df_final=pd.DataFrame({"names":[],"presence":[]},columns=list_csv_doc[0].columns)
+
+if nbr_cours<=1:
+    df_final["names"]=list_csv_doc[0]["names"]
+    df_final["presence"]=list_csv_doc[0]["presence"]
+else:       
+    for i in range(1,nbr_cours):
+        df_final=list_csv_doc[0].merge(list_csv_doc[i], on='names', how='left')
+
+fichier_present=df.merge(df_final, on='names', how='left')
+
+print()
+
+#Remplissage du df
+p=0
+for i in range(1,fichier_present.shape[1]):
+    fichier_present.loc[1,fichier_present.columns[i]]=infos[p]
+    p+=2
+
+p=0
+for i in range(1,fichier_present.shape[1]):
+    fichier_present.loc[2,fichier_present.columns[i]]=str(liste_horaire[p])
+    p+=1
+
+fichier_present=fichier_present.drop(3).reset_index(drop=True)
+fichier_present = fichier_present.replace(np.nan, '', regex=True)
+print(fichier_present)
+#Export de la fiche d'appel en pdf
+fig, ax =plt.subplots(figsize=(12,4))
+ax.axis('tight')
+ax.axis('off')
+the_table = ax.table(cellText=fichier_present.values,colLabels=fichier_present.columns,loc='center')
+
+pp = PdfPages(r"C:\Users\louis\Documents\GitHub\Projet_Wirtz\feuilles_presence\feuille_presence_"+str(datetime.now().strftime("%d-%m-%Y"))+".pdf")
+pp.savefig(fig, bbox_inches='tight')
+pp.close()
