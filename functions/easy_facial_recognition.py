@@ -11,19 +11,21 @@ from pathlib import Path
 import ntpath
 import pandas as pd
 
-
+#subprocess pour run des command line 
 parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
 parser.add_argument('-i', '--input', type=str, required=True, help='directory of input known faces')
 
-print('[INFO] Starting System...')
-print('[INFO] Importing pretrained model..')
-df_present={"names":set(),"presence":[]}
-pose_predictor_68_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_68_face_landmarks.dat")
-pose_predictor_5_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_5_face_landmarks.dat")
-face_encoder = dlib.face_recognition_model_v1("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/dlib_face_recognition_resnet_model_v1.dat")
-face_detector = dlib.get_frontal_face_detector()
-print('[INFO] Importing pretrained model..')
 
+def start_recognition():
+    global pose_predictor_68_point, pose_predictor_5_point, face_encoder, face_detector, df_present
+    print('[INFO] Starting System...')
+    print('[INFO] Importing pretrained model..')
+    df_present={"names":set(),"presence":[]}
+    pose_predictor_68_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_68_face_landmarks.dat")
+    pose_predictor_5_point = dlib.shape_predictor("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/shape_predictor_5_face_landmarks.dat")
+    face_encoder = dlib.face_recognition_model_v1("C:/Users/louis/Desktop/Programmation_Wirtz/modèles/pretrained_model/dlib_face_recognition_resnet_model_v1.dat")
+    face_detector = dlib.get_frontal_face_detector()
+    print('[INFO] Importing pretrained model..')
 
 def transform(image, face_locations):
     coord_faces = []
@@ -51,7 +53,6 @@ def encode_face(image):
     
 def easy_face_reco(frame, known_face_encodings, known_face_names):
     global result
-    global indices
     global df_present
     rgb_small_frame = frame[:, :, ::-1]
     # ENCODING FACE
@@ -75,7 +76,7 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):
             name = known_face_names[first_match_index]
             df_present['names'].add(name)
             if len(df_present['presence']) < len(df_present['names']):
-                df_present["presence"].append(datetime.now().strftime("%d-%m-%Y-%Hh%M"))
+                df_present["presence"].append(datetime.now().strftime("%Hh%M"))
             else:
                 pass
         else:
@@ -91,8 +92,10 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):
     for shape in landmarks_list:
         for (x, y) in shape:
             cv2.circle(frame, (x, y), 1, (255, 0, 255), -1)
-            
-if __name__ == '__main__':
+
+def execution_recognition():         
+#if __name__ == '__main__':
+    start_recognition()
     args = parser.parse_args()
 
     print('[INFO] Importing faces...')
@@ -125,11 +128,12 @@ if __name__ == '__main__':
         cv2.imshow('Easy Facial Recognition App', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             df_present["names"]=list(df_present["names"])
-            pd.DataFrame(df_present).to_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/output.csv")
+            pd.DataFrame(df_present).to_csv("C:/Users/louis/Documents/GitHub/Projet_Wirtz/outputs/output.csv")
             break
     print('[INFO] Stopping System')
     
     video_capture.release()
     cv2.destroyAllWindows()
     print(df_present)
+    
 
