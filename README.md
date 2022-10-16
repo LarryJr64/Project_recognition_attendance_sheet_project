@@ -1,4 +1,4 @@
-Description :
+# Description
 
 The project "attendance sheet" has been realized in the framework of the Data Architecture course of the DS2E master at the University of Strasbourg. The objective of our project is to automate the signing of an attendance sheet.
 
@@ -50,6 +50,6 @@ Make sure to have the following libraries installed in your Python environment:
 
 Authors : 
 
-- ROUSSEAUX Claude
-- LANEVE Louis
+- ROUSSAUX Claude
+- LANEVE Louis @LANEVE
 - NEUNREUTHER Alexander 
